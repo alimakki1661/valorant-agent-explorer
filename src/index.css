@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #ece8e1;
+  background: #0d0e12;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --red: #ff4655;
+  --red-dark: #c52d3b;
+  --ink: #0d0e12;
+  --panel: #15171d;
+  --panel-light: #1c1f26;
+  --muted: #a5a6ad;
+  --line: rgba(255, 255, 255, 0.11);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+body.modal-open { overflow: hidden; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

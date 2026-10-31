@@ -1,0 +1,10 @@
+.app-shell { min-height: 100vh; background: #0d0e12; }
+.site-header, main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+.site-header { height: 76px; display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; color: #fff; text-decoration: none; font: 700 1.08rem 'Barlow Condensed', sans-serif; letter-spacing: .14em; }
+.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; color: #fff; background: var(--red); }
+.hero-section { padding: 94px 0 82px; }
+.eyebrow { margin: 0 0 12px; color: var(--red); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .2em; }
+h1 { margin: 0 0 24px; font: 800 clamp(4rem, 9vw, 7.4rem)/.82 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: -.035em; }
+h1 span { color: transparent; -webkit-text-stroke: 1px rgba(236,232,225,.8); }
+.hero-copy { max-width: 610px; color: var(--muted); line-height: 1.75; }
