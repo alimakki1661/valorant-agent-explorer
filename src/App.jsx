@@ -50,6 +50,8 @@ function App() {
 
   // Same function on every render, so the modal's useEffect doesn't re-run needlessly.
   const closeDetails = useCallback(() => setSelectedAgent(null), [])
+  // While the popup is open, `inert` stops Tab and clicks from reaching the page behind it.
+  const pageInert = selectedAgent !== null
 
   function toggleErrorTest() {
     setTestError((current) => !current)
@@ -58,7 +60,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="site-header">
+      <header className="site-header" inert={pageInert}>
         <a className="brand" href="#top" aria-label="Valorant Agent Explorer home">
           <span className="brand-mark" aria-hidden="true">
             V
@@ -70,7 +72,7 @@ function App() {
         </span>
       </header>
 
-      <main id="top">
+      <main id="top" inert={pageInert}>
         <section className="hero-section" aria-labelledby="page-title">
           <p className="eyebrow">Choose your next main</p>
           <h1 id="page-title">
@@ -133,7 +135,7 @@ function App() {
         </section>
       </main>
 
-      <footer>
+      <footer inert={pageInert}>
         <p>Built by Ali Makki · Data provided by Valorant-API.com</p>
       </footer>
       {selectedAgent && <AgentDetails agent={selectedAgent} onClose={closeDetails} />}

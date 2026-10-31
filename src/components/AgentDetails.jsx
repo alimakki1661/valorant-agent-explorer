@@ -1,8 +1,24 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import agentTips from '../data/agentTips'
 
 function AgentDetails({ agent, onClose }) {
   const tips = agentTips[agent.displayName]
+  const closeButtonRef = useRef(null)
+  const openerRef = useRef(null)
+
+  // Move keyboard focus into the popup when it opens, and hand it back to
+  // whatever opened it (the agent card) when it closes.
+  useEffect(() => {
+    if (!openerRef.current) openerRef.current = document.activeElement
+    closeButtonRef.current.focus()
+    return () => openerRef.current?.focus()
+  }, [])
+
+  function closeFromBackdrop(event) {
+    event.preventDefault() // stop the browser from moving focus on mousedown
+    onClose()
+  }
+
   useEffect(() => {
     function closeWithEscape(event) {
       if (event.key === 'Escape') onClose()
@@ -16,7 +32,7 @@ function AgentDetails({ agent, onClose }) {
   }, [onClose])
 
   return (
-    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
+    <div className="modal-backdrop" role="presentation" onMouseDown={closeFromBackdrop}>
       <section
         className="agent-modal"
         role="dialog"
@@ -25,6 +41,7 @@ function AgentDetails({ agent, onClose }) {
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
+          ref={closeButtonRef}
           className="close-button"
           type="button"
           onClick={onClose}
