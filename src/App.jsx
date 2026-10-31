@@ -16,7 +16,13 @@ function App() {
   const [selectedAgent, setSelectedAgent] = useState(null)
   const [testError, setTestError] = useState(false)
   const { data, loading, error, retry } = useFetch(testError ? BROKEN_API_URL : API_URL)
-  const agents = useMemo(() => data?.data ?? [], [data])
+  const agents = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data])
+  const hasBadData = !loading && !error && !Array.isArray(data?.data)
+  const errorMessage =
+    error ?? (hasBadData ? 'The API sent back data in an unexpected format.' : null)
+
+  // Three States Pattern: the page is always in exactly one of these.
+  const status = loading ? 'loading' : errorMessage ? 'error' : 'ready'
 
   const roles = useMemo(
     () => ['All', ...new Set(agents.map((agent) => agent.role?.displayName).filter(Boolean))],
@@ -70,17 +76,17 @@ function App() {
           </p>
         </section>
 
-        {loading && <LoadingState />}
-        {!loading && error && (
+        {status === 'loading' && <LoadingState />}
+        {status === 'error' && (
           <ErrorState
-            message={error}
+            message={errorMessage}
             retry={retry}
             isTesting={testError}
             restoreConnection={toggleErrorTest}
           />
         )}
 
-        {!loading && !error && (
+        {status === 'ready' && (
           <section className="explorer" aria-labelledby="roster-title">
             <div className="section-heading">
               <div>
