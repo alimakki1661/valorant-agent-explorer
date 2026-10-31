@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import AgentDetails from './components/AgentDetails'
 import AgentGrid from './components/AgentGrid'
 import ErrorState from './components/ErrorState'
@@ -47,6 +47,9 @@ function App() {
     setSearchTerm('')
     setSelectedRole('All')
   }
+
+  // Same function on every render, so the modal's useEffect doesn't re-run needlessly.
+  const closeDetails = useCallback(() => setSelectedAgent(null), [])
 
   function toggleErrorTest() {
     setTestError((current) => !current)
@@ -133,9 +136,7 @@ function App() {
       <footer>
         <p>Built by Ali Makki · Data provided by Valorant-API.com</p>
       </footer>
-      {selectedAgent && (
-        <AgentDetails agent={selectedAgent} onClose={() => setSelectedAgent(null)} />
-      )}
+      {selectedAgent && <AgentDetails agent={selectedAgent} onClose={closeDetails} />}
     </div>
   )
 }
