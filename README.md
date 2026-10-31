@@ -31,4 +31,4 @@ Select **Test API error** near the bottom of the page. The app switches to a del
 
 ## Live site
 
-The Netlify URL will be added after deployment.
+https://melodious-malabi-9899ac.netlify.app/
