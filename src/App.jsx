@@ -9,6 +9,11 @@ import './App.css'
 
 const API_URL = 'https://valorant-api.com/v1/agents?isPlayableCharacter=true'
 const BROKEN_API_URL = 'https://valorant-api.com/v1/not-a-real-endpoint'
+const STATUS_LABELS = {
+  loading: 'Connecting...',
+  error: 'Data offline',
+  ready: 'Live agent data',
+}
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -57,8 +62,8 @@ function App() {
           </span>
           <span>AGENT ARCHIVE</span>
         </a>
-        <span className="api-status">
-          <span aria-hidden="true" /> Live agent data
+        <span className={`api-status ${status}`}>
+          <span aria-hidden="true" /> {STATUS_LABELS[status]}
         </span>
       </header>
 
