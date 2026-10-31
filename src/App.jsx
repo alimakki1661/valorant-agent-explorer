@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import AgentDetails from './components/AgentDetails'
 import AgentGrid from './components/AgentGrid'
 import ErrorState from './components/ErrorState'
 import LoadingState from './components/LoadingState'
@@ -12,6 +13,7 @@ const BROKEN_API_URL = 'https://valorant-api.com/v1/not-a-real-endpoint'
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRole, setSelectedRole] = useState('All')
+  const [selectedAgent, setSelectedAgent] = useState(null)
   const [testError, setTestError] = useState(false)
   const { data, loading, error, retry } = useFetch(testError ? BROKEN_API_URL : API_URL)
   const agents = useMemo(() => data?.data ?? [], [data])
@@ -37,6 +39,7 @@ function App() {
 
   function toggleErrorTest() {
     setTestError((current) => !current)
+    setSelectedAgent(null)
   }
 
   return (
@@ -66,7 +69,7 @@ function App() {
               <p className="result-count">{visibleAgents.length} agents found</p>
             </div>
             <SearchFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} selectedRole={selectedRole} setSelectedRole={setSelectedRole} roles={roles} />
-            <AgentGrid agents={visibleAgents} onSelectAgent={() => {}} clearFilters={clearFilters} />
+            <AgentGrid agents={visibleAgents} onSelectAgent={setSelectedAgent} clearFilters={clearFilters} />
           </section>
         )}
 
@@ -77,6 +80,7 @@ function App() {
       </main>
 
       <footer><p>Built by Ali Makki · Data provided by Valorant-API.com</p></footer>
+      {selectedAgent && <AgentDetails agent={selectedAgent} onClose={() => setSelectedAgent(null)} />}
     </div>
   )
 }
