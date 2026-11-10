@@ -21,7 +21,14 @@ function App() {
   const [selectedAgent, setSelectedAgent] = useState(null)
   const [testError, setTestError] = useState(false)
   const { data, loading, error, retry } = useFetch(testError ? BROKEN_API_URL : API_URL)
-  const agents = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data])
+  // Sorted A to Z. [...data.data] copies the list first, so the fetched data itself isn't changed.
+  const agents = useMemo(
+    () =>
+      Array.isArray(data?.data)
+        ? [...data.data].sort((a, b) => a.displayName.localeCompare(b.displayName))
+        : [],
+    [data],
+  )
   const hasBadData = !loading && !error && !Array.isArray(data?.data)
   const failure =
     error ??
@@ -30,10 +37,10 @@ function App() {
   // Three States Pattern: the page is always in exactly one of these.
   const status = loading ? 'loading' : failure ? 'error' : 'ready'
 
-  const roles = useMemo(
-    () => ['All', ...new Set(agents.map((agent) => agent.role?.displayName).filter(Boolean))],
-    [agents],
-  )
+  const roles = useMemo(() => {
+    const roleNames = new Set(agents.map((agent) => agent.role?.displayName).filter(Boolean))
+    return ['All', ...[...roleNames].sort()]
+  }, [agents])
 
   const visibleAgents = useMemo(() => {
     const query = searchTerm.trim().toLowerCase()
