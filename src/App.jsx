@@ -11,7 +11,7 @@ const API_URL = 'https://valorant-api.com/v1/agents?isPlayableCharacter=true'
 const BROKEN_API_URL = 'https://valorant-api.com/v1/not-a-real-endpoint'
 const STATUS_LABELS = {
   loading: 'Connecting...',
-  error: 'Data offline',
+  error: 'Data unavailable',
   ready: 'Live agent data',
 }
 
@@ -23,11 +23,12 @@ function App() {
   const { data, loading, error, retry } = useFetch(testError ? BROKEN_API_URL : API_URL)
   const agents = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data])
   const hasBadData = !loading && !error && !Array.isArray(data?.data)
-  const errorMessage =
-    error ?? (hasBadData ? 'The API sent back data in an unexpected format.' : null)
+  const failure =
+    error ??
+    (hasBadData ? { kind: 'bad-data', detail: 'Expected data.data to be an array.' } : null)
 
   // Three States Pattern: the page is always in exactly one of these.
-  const status = loading ? 'loading' : errorMessage ? 'error' : 'ready'
+  const status = loading ? 'loading' : failure ? 'error' : 'ready'
 
   const roles = useMemo(
     () => ['All', ...new Set(agents.map((agent) => agent.role?.displayName).filter(Boolean))],
@@ -89,7 +90,7 @@ function App() {
         {status === 'loading' && <LoadingState />}
         {status === 'error' && (
           <ErrorState
-            message={errorMessage}
+            failure={failure}
             retry={retry}
             isTesting={testError}
             restoreConnection={toggleErrorTest}

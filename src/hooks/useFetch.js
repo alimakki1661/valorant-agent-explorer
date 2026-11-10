@@ -11,15 +11,22 @@ function useFetch(url) {
     const controller = new AbortController()
 
     async function loadData() {
+      // Track which step we're on, so a failure says what kind it was:
+      // 'offline' (never reached the server), 'server' (bad status), 'bad-data' (unreadable JSON).
+      let kind = 'offline'
+      let status = null
       try {
         const response = await fetch(url, { signal: controller.signal })
-        if (!response.ok) throw new Error(`Request failed with status ${response.status}.`)
+        kind = 'server'
+        status = response.status
+        if (!response.ok) throw new Error(`Request failed with status ${status}.`)
+        kind = 'bad-data'
         const data = await response.json()
         setResult({ url, attempt, data, error: null })
       } catch (requestError) {
         if (controller.signal.aborted) return
-        const message = requestError.message || 'The agent data could not be loaded.'
-        setResult({ url, attempt, data: null, error: message })
+        const error = { kind, status, detail: requestError.message }
+        setResult({ url, attempt, data: null, error })
       }
     }
 
