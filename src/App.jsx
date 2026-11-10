@@ -104,7 +104,9 @@ function App() {
                 <p className="eyebrow">Agent database</p>
                 <h2 id="roster-title">Explore the roster</h2>
               </div>
-              <p className="result-count">{visibleAgents.length} agents found</p>
+              <p className="result-count">
+                {visibleAgents.length} {visibleAgents.length === 1 ? 'agent' : 'agents'} found
+              </p>
             </div>
             <SearchFilters
               searchTerm={searchTerm}
