@@ -1,35 +1,39 @@
 import { useCallback, useEffect, useState } from 'react'
 
 function useFetch(url) {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [requestNumber, setRequestNumber] = useState(0)
-  const retry = useCallback(() => setRequestNumber((current) => current + 1), [])
+  const [attempt, setAttempt] = useState(0)
+  // Each result remembers which request (url + attempt) it answers. That lets us work out
+  // `loading` during render instead of setting state at the start of the effect.
+  const [result, setResult] = useState({ url: null, attempt: null, data: null, error: null })
+  const retry = useCallback(() => setAttempt((current) => current + 1), [])
 
   useEffect(() => {
     const controller = new AbortController()
+
     async function loadData() {
-      setLoading(true)
-      setError(null)
       try {
         const response = await fetch(url, { signal: controller.signal })
         if (!response.ok) throw new Error(`Request failed with status ${response.status}.`)
-        setData(await response.json())
+        const data = await response.json()
+        setResult({ url, attempt, data, error: null })
       } catch (requestError) {
-        if (requestError.name !== 'AbortError') {
-          setData(null)
-          setError(requestError.message || 'The agent data could not be loaded.')
-        }
-      } finally {
-        if (!controller.signal.aborted) setLoading(false)
+        if (controller.signal.aborted) return
+        const message = requestError.message || 'The agent data could not be loaded.'
+        setResult({ url, attempt, data: null, error: message })
       }
     }
+
     loadData()
     return () => controller.abort()
-  }, [url, requestNumber])
+  }, [url, attempt])
 
-  return { data, loading, error, retry }
+  const isCurrent = result.url === url && result.attempt === attempt
+  return {
+    data: isCurrent ? result.data : null,
+    error: isCurrent ? result.error : null,
+    loading: !isCurrent,
+    retry,
+  }
 }
 
 export default useFetch
